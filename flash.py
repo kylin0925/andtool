@@ -15,11 +15,15 @@
 import sys
 import os
 import optparse
-options = ['boot','system','-w','--with-key']
-flags = {'FBOOT': False,'FSYS' : False, 'FKEY': False,'FWIPE': False}
+options = ['boot','system','-w','--with-key','reboot']
+optmap = {'boot':'FBOOT','system':'FSYS','-w':'FWIPE','--with-key':'FKEY','reboot':'REBOOT'}
+flags = {'FBOOT': False,'FSYS' : False, 'FKEY': False,'FWIPE': False,'REBOOT':False}
+
 target_product = ''
 def set_flag(o):
     print 'set flag :',o
+    flags[optmap[o]] = True
+'''
     if cmp(o,'boot') == 0 :
         flags['FBOOT'] = True
 
@@ -31,8 +35,7 @@ def set_flag(o):
 
     if cmp(o,'--with-key') == 0 :
         flags['FKEY'] = True
- 
-    return
+ '''
 
 def match_opt(o):
     #print "match " +o
@@ -59,32 +62,42 @@ def do_flash():
     boot_img_path = img_path + 'boot.img'
     system_img_path = img_path + 'system.img'
 
-    fastboot = os.getenv('HOME') + '/android_tool/bin/fastboot'
-    sig_cmd = 'sudo ' + fastboot +' signature {0}' 
-    flash_cmd = 'sudo ' + fastboot + ' flash {0} {1}'
-    
-    if flags['FBOOT'] == True:
-        if flags['FKEY']==True:    
-            sig_boot = sig_cmd.format(boot_sig_path)
-            print sig_boot
-            os.system(sig_boot)
-        flash_boot = flash_cmd.format('boot',boot_img_path)
-        print flash_boot
-        os.system(flash_boot)
+    fastboot = 'sudo ' + os.getenv('HOME') + '/android_tool/bin/fastboot'
+    sig_cmd = fastboot +' signature {0}' 
+    flash_cmd = fastboot + ' flash {0} {1}'
+    reboot_cmd = fastboot + ' reboot'     
+    wipe_cmd = fastboot + ' -w'
 
-    if flags['FSYS'] == True:
-        if flags['FKEY']==True:    
-            sig_system =sig_cmd.format(system_sig_path)
-            print sig_system
-            os.system(sig_system)
-        flash_system = flash_cmd.format('system',system_img_path)
-        print flash_system
-        os.system(flash_system)
+    if flags['REBOOT'] == True:
+        print reboot_cmd
+        os.system(reboot_cmd)
+    elif flags['FWIPE'] ==True:
+        print wipe_cmd
+        os.system(wipe_cmd)
+    else:
+        if flags['FBOOT'] == True:
+            if flags['FKEY']==True:    
+                sig_boot = sig_cmd.format(boot_sig_path)
+                print sig_boot
+                os.system(sig_boot)
+            flash_boot = flash_cmd.format('boot',boot_img_path)
+            print flash_boot
+            os.system(flash_boot)
+
+        if flags['FSYS'] == True:
+            if flags['FKEY']==True:    
+                sig_system =sig_cmd.format(system_sig_path)
+                print sig_system
+                os.system(sig_system)
+            flash_system = flash_cmd.format('system',system_img_path)
+            print flash_system
+            os.system(flash_system)
+        
 #-----------------
 # start
 #-----------------
 args = sys.argv[1:]
-print args
+#print args
 
 if check_inoptions(args) ==False:
     print "arg error"
