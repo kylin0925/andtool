@@ -18,14 +18,29 @@ import optparse
 options = ['boot','system','-w','--with-key']
 flags = {'FBOOT': False,'FSYS' : False, 'FKEY': False,'FWIPE': False}
 target_product = ''
-def find_img_location():
+def set_flag(o):
+    print 'set flag :',o
+    if cmp(o,'boot') == 0 :
+        flags['FBOOT'] = True
+
+    if cmp(o,'system')== 0 :
+        flags['FSYS'] = True
+
+    if cmp(o,'-W')== 0 :
+        flags['FWIPE'] = True
+
+    if cmp(o,'--with-key') == 0 :
+        flags['FKEY'] = True
+ 
     return
+
 def match_opt(o):
     #print "match " +o
     for opt in options:
-        print opt
+        #print opt
         if cmp(o,opt) == 0:
-            flags[o]=True
+            #flags[o]=True
+            set_flag(o)
             return True
     return False
 
@@ -38,24 +53,50 @@ def check_inoptions(opt):
             return False
     return True
 def do_flash():
+    img_path = 'out/target/product/' + target_product + '/'
+    boot_sig_path = img_path + 'boot.sig'
+    system_sig_path = img_path + 'system.sig'
+    boot_img_path = img_path + 'boot.img'
+    system_img_path = img_path + 'system.img'
 
-    fastboot= 'fastboot'
-    sig_cmd = 'sudo fastboot signature {0}/{1}' 
-    flash_cmd = 'sudo fastboot flash {0} {1}/{2}'
+    fastboot = os.getenv('HOME') + '/android_tool/bin/fastboot'
+    sig_cmd = 'sudo ' + fastboot +' signature {0}' 
+    flash_cmd = 'sudo ' + fastboot + ' flash {0} {1}'
     
+    if flags['FBOOT'] == True:
+        if flags['FKEY']==True:    
+            sig_boot = sig_cmd.format(boot_sig_path)
+            print sig_boot
+            os.system(sig_boot)
+        flash_boot = flash_cmd.format('boot',boot_img_path)
+        print flash_boot
+        os.system(flash_boot)
+
+    if flags['FSYS'] == True:
+        if flags['FKEY']==True:    
+            sig_system =sig_cmd.format(system_sig_path)
+            print sig_system
+            os.system(sig_system)
+        flash_system = flash_cmd.format('system',system_img_path)
+        print flash_system
+        os.system(flash_system)
+#-----------------
+# start
+#-----------------
 args = sys.argv[1:]
 print args
 
 if check_inoptions(args) ==False:
     print "arg error"
 else:    
-    print "ok .....go"
-    print "flags :" ,flags
+#    print "ok .....go"
+#    print "flags :" ,flags
 
     target_product = os.getenv('TARGET_PRODUCT')
+    print
     print "TARGET_PRODUCT " ,target_product
-
-    if target_product == '':
+    print 
+    if target_product == '' or target_product == None:
         print "error exec envset.sh"
     
-    do_flash(s)
+    do_flash()
