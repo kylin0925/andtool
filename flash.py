@@ -15,8 +15,8 @@
 import sys
 import os
 import optparse
-options = ['boot','system','-w','--with-key','reboot']
-optmap = {'boot':'FBOOT','system':'FSYS','-w':'FWIPE','--with-key':'FKEY','reboot':'REBOOT'}
+options = ['boot','system','-w','-k','--with-key','reboot']
+optmap = {'boot':'FBOOT','system':'FSYS','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT'}
 flags = {'FBOOT': False,'FSYS' : False, 'FKEY': False,'FWIPE': False,'REBOOT':False}
 
 target_product = ''
