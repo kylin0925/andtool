@@ -50,39 +50,41 @@ def do_flash():
     reboot_cmd = fastboot + ' reboot'     
     wipe_cmd = fastboot + ' -w'
 
+    
+    if flags['FBOOT'] == True:
+        if flags['FKEY']==True:    
+            sig_boot = sig_cmd.format(boot_sig_path)
+            print sig_boot
+            os.system(sig_boot)
+        flash_boot = flash_cmd.format('boot',boot_img_path)
+        print flash_boot
+        os.system(flash_boot)
+
+    if flags['FSYS'] == True:
+        if flags['FKEY']==True:    
+            sig_system =sig_cmd.format(system_sig_path)
+            print sig_system
+            os.system(sig_system)
+        flash_system = flash_cmd.format('system',system_img_path)
+        print flash_system
+        os.system(flash_system)
+
+    if flags['FREC'] == True:
+        if flags['FKEY']==True:    
+            sig_system =sig_cmd.format(recovery_sig_path)
+            print sig_system
+            os.system(sig_system)
+        flash_system = flash_cmd.format('recovery',recovery_img_path)
+        print flash_system
+        os.system(flash_system)
+
     if flags['REBOOT'] == True:
         print reboot_cmd
         os.system(reboot_cmd)
-    elif flags['FWIPE'] ==True:
+
+    if flags['FWIPE'] ==True:
         print wipe_cmd
         os.system(wipe_cmd)
-    else:
-        if flags['FBOOT'] == True:
-            if flags['FKEY']==True:    
-                sig_boot = sig_cmd.format(boot_sig_path)
-                print sig_boot
-                os.system(sig_boot)
-            flash_boot = flash_cmd.format('boot',boot_img_path)
-            print flash_boot
-            os.system(flash_boot)
-
-        if flags['FSYS'] == True:
-            if flags['FKEY']==True:    
-                sig_system =sig_cmd.format(system_sig_path)
-                print sig_system
-                os.system(sig_system)
-            flash_system = flash_cmd.format('system',system_img_path)
-            print flash_system
-            os.system(flash_system)
-
-        if flags['FREC'] == True:
-            if flags['FKEY']==True:    
-                sig_system =sig_cmd.format(recovery_sig_path)
-                print sig_system
-                os.system(sig_system)
-            flash_system = flash_cmd.format('recovery',recovery_img_path)
-            print flash_system
-            os.system(flash_system)
         
 #-----------------
 # start
