@@ -15,7 +15,6 @@
 import sys
 import os
 import optparse
-#options = ['boot','system','recovery','-w','-k','--with-key','reboot']
 optmap = {'boot':'FBOOT','system':'FSYS','recovery':'FREC','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT'}
 flags = {'FBOOT': False,'FSYS' : False,'FREC':False ,'FKEY': False,'FWIPE': False,'REBOOT':False}
 
@@ -27,30 +26,6 @@ def set_flag(o):
         return True
     else:
         return False
-'''
-    if cmp(o,'boot') == 0 :
-        flags['FBOOT'] = True
-
-    if cmp(o,'system')== 0 :
-        flags['FSYS'] = True
-
-    if cmp(o,'-W')== 0 :
-        flags['FWIPE'] = True
-
-    if cmp(o,'--with-key') == 0 :
-        flags['FKEY'] = True
- 
-
-def match_opt(o):
-    #print "match " +o
-    for opt in options:
-        #print opt
-        if cmp(o,opt) == 0:
-            #flags[o]=True
-            set_flag(o)
-            return True
-    return False
-'''
 def check_inoptions(opt):
     if len(opt) == 0 :
         print 'input options is 0'
