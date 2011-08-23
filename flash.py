@@ -15,14 +15,18 @@
 import sys
 import os
 import optparse
-options = ['boot','system','-w','-k','--with-key','reboot']
-optmap = {'boot':'FBOOT','system':'FSYS','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT'}
-flags = {'FBOOT': False,'FSYS' : False, 'FKEY': False,'FWIPE': False,'REBOOT':False}
+#options = ['boot','system','recovery','-w','-k','--with-key','reboot']
+optmap = {'boot':'FBOOT','system':'FSYS','recovery':'FREC','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT'}
+flags = {'FBOOT': False,'FSYS' : False,'FREC':False ,'FKEY': False,'FWIPE': False,'REBOOT':False}
 
 target_product = ''
 def set_flag(o):
     print 'set flag :',o
-    flags[optmap[o]] = True
+    if optmap.has_key(o) == True:
+        flags[optmap[o]] = True
+        return True
+    else:
+        return False
 '''
     if cmp(o,'boot') == 0 :
         flags['FBOOT'] = True
@@ -35,7 +39,7 @@ def set_flag(o):
 
     if cmp(o,'--with-key') == 0 :
         flags['FKEY'] = True
- '''
+ 
 
 def match_opt(o):
     #print "match " +o
@@ -46,21 +50,24 @@ def match_opt(o):
             set_flag(o)
             return True
     return False
-
+'''
 def check_inoptions(opt):
     if len(opt) == 0 :
         print 'input options is 0'
         return False
     for o in opt:
-        if match_opt(o) == False:
+        if set_flag(o) == False:
             return False
     return True
 def do_flash():
     img_path = 'out/target/product/' + target_product + '/'
     boot_sig_path = img_path + 'boot.sig'
     system_sig_path = img_path + 'system.sig'
+    recovery_sig_path= img_path + 'recovery.sig'
+
     boot_img_path = img_path + 'boot.img'
     system_img_path = img_path + 'system.img'
+    recovery_img_path = img_path + 'recovery.img'
 
     fastboot = 'sudo ' + os.getenv('HOME') + '/android_tool/bin/fastboot'
     sig_cmd = fastboot +' signature {0}' 
@@ -90,6 +97,15 @@ def do_flash():
                 print sig_system
                 os.system(sig_system)
             flash_system = flash_cmd.format('system',system_img_path)
+            print flash_system
+            os.system(flash_system)
+
+        if flags['FREC'] == True:
+            if flags['FKEY']==True:    
+                sig_system =sig_cmd.format(recovery_sig_path)
+                print sig_system
+                os.system(sig_system)
+            flash_system = flash_cmd.format('recovery',recovery_img_path)
             print flash_system
             os.system(flash_system)
         
