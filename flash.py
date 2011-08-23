@@ -78,14 +78,14 @@ def do_flash():
         print flash_system
         os.system(flash_system)
 
+    if flags['FWIPE'] ==True:
+        print wipe_cmd
+        os.system(wipe_cmd)
+ 
     if flags['REBOOT'] == True:
         print reboot_cmd
         os.system(reboot_cmd)
 
-    if flags['FWIPE'] ==True:
-        print wipe_cmd
-        os.system(wipe_cmd)
-        
 #-----------------
 # start
 #-----------------
