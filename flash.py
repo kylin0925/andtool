@@ -26,6 +26,7 @@ def set_flag(o):
         return True
     else:
         return False
+
 def check_inoptions(opt):
     if len(opt) == 0 :
         print 'input options is 0'
@@ -34,49 +35,40 @@ def check_inoptions(opt):
         if set_flag(o) == False:
             return False
     return True
-def do_flash():
-    img_path = 'out/target/product/' + target_product + '/'
-    boot_sig_path = img_path + 'boot.sig'
-    system_sig_path = img_path + 'system.sig'
-    recovery_sig_path= img_path + 'recovery.sig'
 
-    boot_img_path = img_path + 'boot.img'
-    system_img_path = img_path + 'system.img'
-    recovery_img_path = img_path + 'recovery.img'
-
+def flash(img_type,path,with_key):
     fastboot = 'sudo ' + os.getenv('HOME') + '/android_tool/bin/fastboot'
+    img_path = path + img_type + ".img"
+    sig_path = path + img_type + ".sig"
+
     sig_cmd = fastboot +' signature {0}' 
     flash_cmd = fastboot + ' flash {0} {1}'
+
+    if with_key == True:
+        sig = sig_cmd.format(sig_path)
+        print sig
+        #os.system(sig)
+
+    flash_img = flash_cmd.format(img_type,img_path)
+    print flash_img
+    os.system(flash_img)
+
+def do_flash():
+    img_path = 'out/target/product/' + target_product + '/'
+
+    fastboot = 'sudo ' + os.getenv('HOME') + '/android_tool/bin/fastboot'
     reboot_cmd = fastboot + ' reboot'     
     wipe_cmd = fastboot + ' -w'
 
-    
+    key = flags['FKEY']
     if flags['FBOOT'] == True:
-        if flags['FKEY']==True:    
-            sig_boot = sig_cmd.format(boot_sig_path)
-            print sig_boot
-            os.system(sig_boot)
-        flash_boot = flash_cmd.format('boot',boot_img_path)
-        print flash_boot
-        os.system(flash_boot)
+        flash('boot',img_path,key)
 
     if flags['FSYS'] == True:
-        if flags['FKEY']==True:    
-            sig_system =sig_cmd.format(system_sig_path)
-            print sig_system
-            os.system(sig_system)
-        flash_system = flash_cmd.format('system',system_img_path)
-        print flash_system
-        os.system(flash_system)
+        flash('system',img_path,key)
 
     if flags['FREC'] == True:
-        if flags['FKEY']==True:    
-            sig_system =sig_cmd.format(recovery_sig_path)
-            print sig_system
-            os.system(sig_system)
-        flash_system = flash_cmd.format('recovery',recovery_img_path)
-        print flash_system
-        os.system(flash_system)
+        flash('recovery',img_path,key)
 
     if flags['FWIPE'] ==True:
         print wipe_cmd
