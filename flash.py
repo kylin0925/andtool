@@ -15,10 +15,12 @@
 import sys
 import os
 import optparse
-optmap = {'boot':'FBOOT','system':'FSYS','recovery':'FREC','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT'}
-flags = {'FBOOT': False,'FSYS' : False,'FREC':False ,'FKEY': False,'FWIPE': False,'REBOOT':False}
+optmap = {'boot':'FBOOT','system':'FSYS','recovery':'FREC','-w':'FWIPE','--with-key':'FKEY','-k':'FKEY','reboot':'REBOOT','-p':'FPATH'}
+flags = {'FBOOT': False,'FSYS' : False,'FREC':False ,'FKEY': False,'FWIPE': False,'REBOOT':False,'FPATH':False}
 
 target_product = ''
+img_path = 'out/target/product/' + target_product + '/'
+
 def set_flag(o):
     print 'set flag :',o
     if optmap.has_key(o) == True:
@@ -32,8 +34,15 @@ def check_inoptions(opt):
         print 'input options is 0'
         return False
     for o in opt:
-        if set_flag(o) == False:
+        if o!= '-p' and set_flag(o) == False:
             return False
+        elif o == '-p' :
+            path = o[2:]
+            if path[0] != '=':
+                return False
+            print path[1:]
+            img_path = path[1:]
+            set_flag(o)
     return True
 
 def flash(img_type,path,with_key):
@@ -47,14 +56,13 @@ def flash(img_type,path,with_key):
     if with_key == True:
         sig = sig_cmd.format(sig_path)
         print sig
-        #os.system(sig)
+        os.system(sig)
 
     flash_img = flash_cmd.format(img_type,img_path)
     print flash_img
     os.system(flash_img)
 
 def do_flash():
-    img_path = 'out/target/product/' + target_product + '/'
 
     fastboot = 'sudo ' + os.getenv('HOME') + '/android_tool/bin/fastboot'
     reboot_cmd = fastboot + ' reboot'     
@@ -96,5 +104,6 @@ else:
     print 
     if target_product == '' or target_product == None:
         print "error exec envset.sh"
-    
+
+    img_path = 'out/target/product/' + target_product + '/'
     do_flash()
